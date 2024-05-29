@@ -1,2 +1,4 @@
 ﻿  main.cpp
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(151,15): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(225,89): warning C4244: "argument": konwersja z "GLuint" do "GLfloat", możliwa utrata danych
   SNAKE.vcxproj -> C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\x64\Debug\SNAKE.exe
