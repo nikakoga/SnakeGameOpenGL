@@ -9,6 +9,19 @@
 #define GRID_COUNT_X 8
 #define GRID_COUNT_Y 8
 
+//#define COLOR_SNAKE_TAIL (GLfloat[3]){0.6, 0.88, 0.6}
+//#define COLOR_SNAKE_HEAD (GLfloat[3]){0.5,1.0,0.5}
+//#define COLOR_FOOD (GLfloat[3]){1.0,0.5,0.5}
+//#define COLOR_BACKGROUND (GLfloat[3]){0.14,0.16,0.18}
+
+GLfloat color_tail[] = { 0.6, 0.88, 0.6 };
+
+GLfloat color_head[] = { 0.5,1.0,0.5 };
+
+GLfloat color_food [] ={ 1.0, 0.5, 0.5 };
+
+GLfloat color_background[] = { 0.14,0.16,0.18 };
+
 GLfloat verticles[] = {
     0.0, 0.0,
     0.0, 1.0,
@@ -151,17 +164,62 @@ int main(int argc, char const* argv[]) {
     foodPosition = generateRandomPosition();
 
     while (!glfwWindowShouldClose(window)) { // Tak d³ugo jak okno nie powinno zostaæ zamkniête
-        glClearColor(0, 1, 0, 1);
+        glClearColor(
+            color_background[0],
+            color_background[1],
+            color_background[2],
+            1.0);
+
         glEnable(GL_DEPTH_TEST);
-        keyFunctions(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Wyczyœæ bufor koloru i g³êbokoœci
 
-        glBindVertexArray(VAO);
+        keyFunctions(window);
+
         glUseProgram(shader_programm);
-        glUniform1f(glGetUniformLocation(shader_programm, "POSITION"), snake.positions[0]);
-        glUniform2f(glGetUniformLocation(shader_programm, "GRID_COUNT"), (GLfloat)GRID_COUNT_X, (GLfloat)GRID_COUNT_Y);
+        glBindVertexArray(VAO);
+        glUniform2f(glGetUniformLocation(shader_programm, "GRID_COUNT"), 
+            (GLfloat)GRID_COUNT_X, 
+            (GLfloat)GRID_COUNT_Y);
+
+        //draw Snake
+        for (GLuint i = 0; i < snake.counter; i++)
+        {
+            glUniform1f(
+                glGetUniformLocation(shader_programm, "POSITION"), 
+                snake.positions[0]);
+
+            if (i == 0)
+            {
+                glUniform3f(
+                    glGetUniformLocation(shader_programm, "COLOR"),
+                    color_head[0],
+                    color_head[1],
+                    color_head[2]);
+            }
+            else
+            {
+                glUniform3f(
+                    glGetUniformLocation(shader_programm, "COLOR"),
+                    color_tail[0],
+                    color_tail[1],
+                    color_tail[2]);
+            }
+            
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        }
+
+        //draw Food
+        glUniform1f(glGetUniformLocation(shader_programm, "POSITION"), 
+            foodPosition);
+
+        glUniform3f(
+            glGetUniformLocation(shader_programm, "COLOR"),
+            color_food[0],
+            color_food[1],
+            color_food[2]);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
         glfwPollEvents(); // Wykonaj procedury callback w zale¿noœci od zdarzeñ jakie zasz³y
         glfwSwapBuffers(window); // Zamieñ bufory
