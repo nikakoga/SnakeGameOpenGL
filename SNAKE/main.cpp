@@ -4,6 +4,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "ShaderProgram.h" 
 
 #define GRID_COUNT_X 8
 #define GRID_COUNT_Y 8
@@ -20,41 +21,15 @@ GLuint indices[] = {
     2, 3, 0
 };
 
-const GLchar* vShader_Code =
-"#version 330 core\n"
-"layout (location = 0) in vec2 v_pos;\n"
-"uniform float POSITION;\n"
-"uniform vec2 GRID_COUNT;\n"
-"void main() {\n"
-"   vec2 GRID_SIZE = vec2(2.0 / GRID_COUNT.x, 2.0 / GRID_COUNT.y);\n"
-"   vec2 pos_center = vec2((mod(POSITION, GRID_COUNT.x) * GRID_SIZE.x) - 1.0 + (GRID_SIZE.x) / 2.0,\n"
-"                          1.0 - GRID_SIZE.y - (floor(POSITION / GRID_COUNT.x) * GRID_SIZE.y) + (GRID_SIZE.y / 2.0));\n"
-"   gl_Position = vec4(\n"
-"       pos_center.x - (GRID_SIZE.x / 2.0) + (v_pos.x * GRID_SIZE.x),\n"
-"       pos_center.y - (GRID_SIZE.y / 2.0) + (v_pos.y * GRID_SIZE.y),\n"
-"       0.0, 1.0\n"
-"   );\n"
-"}\0";
-
-const GLchar* fShader_Code =
-"#version 330 core\n"
-"out vec4 fragment_color;\n"
-"void main() {\n"
-"   fragment_color = vec4(1.0, 0.5, 0.5, 1.0);\n"
-"}\0";
-
-struct Button
-{
+struct Button {
     GLboolean down, last, pressed;
 };
-struct Keyboard
-{
+struct Keyboard {
     struct Button keys[GLFW_KEY_LAST];
 };
 struct Keyboard keyboard = {};
 
-enum Directions
-{
+enum Directions {
     LEFT = 1,
     RIGHT = 2,
     UP = 4,
@@ -62,8 +37,7 @@ enum Directions
     PAUSE = 16
 };
 
-struct Snake
-{
+struct Snake {
     GLuint counter;
     GLuint positions[GRID_COUNT_X * GRID_COUNT_Y];
     GLuint direction;
@@ -72,20 +46,16 @@ struct Snake
 struct Snake snake = {};
 GLuint foodPosition = 0;
 
-GLuint generateRandomPosition(void)
-{
+GLuint generateRandomPosition(void) {
     GLuint randomPosition = (GLuint)(rand() % (GRID_COUNT_X * GRID_COUNT_Y));
     GLboolean free_position;
     do {
         free_position = GL_TRUE;
-        for (GLuint i = 0; i < snake.counter; i++)
-        {
-            if (snake.positions[i] == randomPosition)
-            {
+        for (GLuint i = 0; i < snake.counter; i++) {
+            if (snake.positions[i] == randomPosition) {
                 free_position = GL_FALSE;
                 randomPosition++;
-                if (randomPosition >= (GRID_COUNT_X * GRID_COUNT_Y))
-                {
+                if (randomPosition >= (GRID_COUNT_X * GRID_COUNT_Y)) {
                     randomPosition %= (GRID_COUNT_X * GRID_COUNT_Y);
                 }
             }
@@ -95,14 +65,11 @@ GLuint generateRandomPosition(void)
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-
-    if (key < 0)
-    {
+    if (key < 0) {
         return;
     }
 
-    switch (action)
-    {
+    switch (action) {
     case GLFW_PRESS:
         keyboard.keys[key].down = GL_TRUE;
         break;
@@ -114,40 +81,27 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
 }
 
-void _button_array_update(struct Button* buttons)
-{
-    for (int i = 0; i < GLFW_KEY_LAST; i++)
-    {
+void _button_array_update(struct Button* buttons) {
+    for (int i = 0; i < GLFW_KEY_LAST; i++) {
         buttons[i].pressed = buttons[i].down && !buttons[i].last;
         buttons[i].last = buttons[i].down;
     }
 }
 
-void keyFunctions(GLFWwindow* window)
-{
+void keyFunctions(GLFWwindow* window) {
     _button_array_update(keyboard.keys);
 
     if (keyboard.keys[GLFW_KEY_ESCAPE].down)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-//void initOpenGLProgram(GLFWwindow* window) {
-//    //************Tutaj umieszczaj kod, który nale¿y wykonaæ raz, na pocz¹tku programu************
-//    glClearColor(0, 1, 0, 1);
-//    glEnable(GL_DEPTH_TEST);
-//    keyFunctions(window);
-//
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Wyczyœæ bufor koloru i g³êbokoœci
-//    //glfwSetWindowSizeCallback(window, windowResizeCallback);
-//    //glfwSetKeyCallback(window, keyCallback);
-//}
-
 void freeOpenGLProgram(GLFWwindow* window) {
     //************Tutaj umieszczaj kod, który nale¿y wykonaæ po zakoñczeniu pêtli g³ównej************
 }
 
-int main(int argc, char const* argv[]) {
+GLuint createShaderProgram(const char* vertexPath, const char* fragmentPath);
 
+int main(int argc, char const* argv[]) {
     srand(time(NULL));
     if (!glfwInit()) {
         fprintf(stderr, "ERROR: Failed to initialize GLFW!\n");
@@ -172,23 +126,7 @@ int main(int argc, char const* argv[]) {
         return -1;
     }
 
-    GLuint vShader, fShader, shader_programm;
-
-    vShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vShader, 1, &vShader_Code, NULL);
-    glCompileShader(vShader);
-
-    fShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fShader, 1, &fShader_Code, NULL);
-    glCompileShader(fShader);
-
-    shader_programm = glCreateProgram();
-    glAttachShader(shader_programm, vShader);
-    glAttachShader(shader_programm, fShader);
-
-    glLinkProgram(shader_programm);
-    glDeleteShader(vShader);
-    glDeleteShader(fShader);
+    GLuint shader_programm = createShaderProgram("vertexShader.glsl", "fragmentShader.glsl");
 
     GLuint VAO, VBO, EBO;
 
@@ -213,8 +151,6 @@ int main(int argc, char const* argv[]) {
     foodPosition = generateRandomPosition();
 
     while (!glfwWindowShouldClose(window)) { // Tak d³ugo jak okno nie powinno zostaæ zamkniête
-
-        //initOpenGLProgram(window); // Operacje inicjuj¹ce
         glClearColor(0, 1, 0, 1);
         glEnable(GL_DEPTH_TEST);
         keyFunctions(window);
