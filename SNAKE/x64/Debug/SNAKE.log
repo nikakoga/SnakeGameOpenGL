@@ -1,11 +1,11 @@
 ﻿  main.cpp
-C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(17,26): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
-C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(17,31): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
-C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(17,37): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
-C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(23,32): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
-C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(23,37): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
-C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(23,42): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
-C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(118,15): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
-C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(189,34): warning C4244: "argument": konwersja z "GLuint" do "GLfloat", możliwa utrata danych
-C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(213,13): warning C4244: "argument": konwersja z "GLuint" do "GLfloat", możliwa utrata danych
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(18,26): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(18,31): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(18,37): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(24,32): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(24,37): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(24,42): warning C4305: "inicjowanie": obcięcie z "double" do "GLfloat"
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(223,15): warning C4244: "argument": konwersja z "time_t" do "unsigned int", możliwa utrata danych
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(309,34): warning C4244: "argument": konwersja z "GLuint" do "GLfloat", możliwa utrata danych
+C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\SNAKE\main.cpp(333,13): warning C4244: "argument": konwersja z "GLuint" do "GLfloat", możliwa utrata danych
   SNAKE.vcxproj -> C:\Users\weron\Documents\STUDIA\PP\6_semestr\Grafika3D\Projekt\SNAKE\x64\Debug\SNAKE.exe

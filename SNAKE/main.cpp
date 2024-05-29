@@ -8,6 +8,7 @@
 
 #define GRID_COUNT_X 8
 #define GRID_COUNT_Y 8
+#define SPEED 8
 
 //#define COLOR_SNAKE_TAIL (GLfloat[3]){0.6, 0.88, 0.6}
 //#define COLOR_SNAKE_HEAD (GLfloat[3]){0.5,1.0,0.5}
@@ -59,25 +60,102 @@ struct Snake {
 struct Snake snake = {};
 GLuint foodPosition = 0;
 
-GLuint generateRandomPosition(void) {
-    GLuint randomPosition = (GLuint)(rand() % (GRID_COUNT_X * GRID_COUNT_Y));
+GLdouble TIME_NOW, TIME_LAST, TIME_DELTA, TIME_SUM;
+
+GLuint generateRandomPosition(void)
+{
+    GLuint RND = (GLuint)(rand() % (GRID_COUNT_X * GRID_COUNT_Y));
     GLboolean free_position;
     do {
         free_position = GL_TRUE;
-        for (GLuint i = 0; i < snake.counter; i++) {
-            if (snake.positions[i] == randomPosition) {
+        for (GLuint i = 0; i < snake.counter; i++)
+        {
+            if (snake.positions[i] == RND)
+            {
                 free_position = GL_FALSE;
-                randomPosition++;
-                if (randomPosition >= (GRID_COUNT_X * GRID_COUNT_Y)) {
-                    randomPosition %= (GRID_COUNT_X * GRID_COUNT_Y);
-                }
+                RND++;
+                if (RND >= (GRID_COUNT_X * GRID_COUNT_Y))
+                    RND %= (GRID_COUNT_X * GRID_COUNT_Y);
             }
         }
     } while (!free_position);
-    return randomPosition;
+    return RND;
+}
+
+void snakeLogic(void)
+{
+    // if pause do nothing
+    if (snake.direction & PAUSE)
+    {
+        return;
+    }
+
+    /* check wall hit */
+    if (
+        (snake.positions[0] % GRID_COUNT_X == 0
+            && snake.direction == LEFT) ||
+        (snake.positions[0] % GRID_COUNT_X == GRID_COUNT_X - 1
+            && snake.direction == RIGHT) ||
+        (snake.positions[0] / GRID_COUNT_X == 0
+            && snake.direction == UP) ||
+        (snake.positions[0] / GRID_COUNT_X == GRID_COUNT_Y - 1
+            && snake.direction == DOWN)
+        )
+    {
+        snake.counter = 1;
+        snake.direction = PAUSE;
+        return;
+    }
+
+    
+    GLuint lastSnakeHeadPosition = snake.positions[0];
+    GLuint lastSnakeLength = snake.counter;
+    
+
+    //update snake head position
+    if (snake.direction == LEFT)
+        snake.positions[0] -= 1;
+    else if (snake.direction == RIGHT)
+        snake.positions[0] += 1;
+    else if (snake.direction == UP)
+        snake.positions[0] -= GRID_COUNT_X;
+    else if (snake.direction == DOWN)
+        snake.positions[0] += GRID_COUNT_X;
+
+    /* FOOOOOD eat check */
+    if (snake.positions[0] == foodPosition)
+        snake.counter += 1;
+
+    /* check if game won */
+    if (snake.counter >= GRID_COUNT_X * GRID_COUNT_Y)
+        snake.counter = 1;
+
+    /* update snake_tail_positions */
+    if (snake.counter > 2)
+        for (GLuint i = 0; i < snake.counter - 2; i++)
+        {
+            snake.positions[snake.counter - 1 - i] =
+            snake.positions[snake.counter - 1 - i - 1];
+        }
+    if (snake.counter > 1)
+        snake.positions[1] = lastSnakeHeadPosition;
+
+    /* check for self destruction */
+    for (GLuint i = 0; i < snake.counter - 1; i++)
+    {
+        if (snake.positions[0] == snake.positions[i + 1])
+            snake.counter = 1;
+    }
+
+
+    /* spawn new food if it was eaten before */
+    if (lastSnakeLength != snake.counter)
+        foodPosition = generateRandomPosition();
+
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    
     if (key < 0) {
         return;
     }
@@ -102,10 +180,37 @@ void _button_array_update(struct Button* buttons) {
 }
 
 void keyFunctions(GLFWwindow* window) {
+
     _button_array_update(keyboard.keys);
+    GLuint _last_snake_direction = snake.direction;
 
     if (keyboard.keys[GLFW_KEY_ESCAPE].down)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    if (keyboard.keys[GLFW_KEY_SPACE].pressed)
+        snake.direction |= PAUSE;
+
+    if (keyboard.keys[GLFW_KEY_LEFT].pressed)
+        if ((snake.direction != LEFT) && !(snake.direction & RIGHT))
+            snake.direction = LEFT;
+
+    if (keyboard.keys[GLFW_KEY_RIGHT].pressed)
+        if (!(snake.direction & LEFT) && (snake.direction != RIGHT))
+            snake.direction = RIGHT;
+
+    if (keyboard.keys[GLFW_KEY_UP].pressed)
+        if ((snake.direction != UP) && !(snake.direction & DOWN))
+            snake.direction = UP;
+
+    if (keyboard.keys[GLFW_KEY_DOWN].pressed)
+        if (!(snake.direction & UP) && (snake.direction != DOWN))
+            snake.direction = DOWN;
+
+    if (snake.direction != _last_snake_direction)
+    {
+        snakeLogic();
+        TIME_SUM = 0.0;
+    }
+
 }
 
 void freeOpenGLProgram(GLFWwindow* window) {
@@ -163,7 +268,11 @@ int main(int argc, char const* argv[]) {
 
     foodPosition = generateRandomPosition();
 
+    TIME_NOW = TIME_LAST = glfwGetTime();
+    TIME_DELTA = TIME_SUM = 0.0;
+
     while (!glfwWindowShouldClose(window)) { // Tak d³ugo jak okno nie powinno zostaæ zamkniête
+
         glClearColor(
             color_background[0],
             color_background[1],
@@ -174,6 +283,17 @@ int main(int argc, char const* argv[]) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Wyczyœæ bufor koloru i g³êbokoœci
 
         keyFunctions(window);
+
+        TIME_NOW = glfwGetTime();
+        TIME_DELTA = TIME_NOW - TIME_LAST;
+        TIME_LAST = TIME_NOW;
+        TIME_SUM += TIME_DELTA;
+
+        if (TIME_SUM >= 1.0/SPEED)
+        {
+            snakeLogic();
+            TIME_SUM = 0.0;
+        }
 
         glUseProgram(shader_programm);
         glBindVertexArray(VAO);
@@ -186,7 +306,7 @@ int main(int argc, char const* argv[]) {
         {
             glUniform1f(
                 glGetUniformLocation(shader_programm, "POSITION"), 
-                snake.positions[0]);
+                snake.positions[i]);
 
             if (i == 0)
             {
