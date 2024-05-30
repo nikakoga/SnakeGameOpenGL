@@ -2,9 +2,11 @@
 layout (location = 0) in vec2 v_pos;
 layout (location = 1) in vec2 v_texCoord; // Nowy atrybut dla tekstury
 out vec2 texCoord; // Nowy atrybut dla tekstury
+flat out int isSnake; // Poprawnie umieszczony kwalifikator interpolacji
 
 uniform float POSITION;
 uniform vec2 GRID_COUNT;
+uniform bool IS_SNAKE; // Nowy parametr przekazywany do shadera
 
 void main() {
     vec2 GRID_SIZE = vec2(2.0 / GRID_COUNT.x, 2.0 / GRID_COUNT.y);
@@ -17,4 +19,5 @@ void main() {
     );
 
     texCoord = v_texCoord; // Przekazujemy wspolrzêdne tekstury
+    isSnake = int(IS_SNAKE); // Konwertujemy bool na int i przekazujemy
 }

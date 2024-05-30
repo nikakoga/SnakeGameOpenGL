@@ -203,6 +203,7 @@ int main(int argc, char const* argv[]) {
 
         // Przekazywanie samplera tekstury
         glUniform1i(glGetUniformLocation(shader_programm, "textureSampler"), 0);
+        glUniform1i(glGetUniformLocation(shader_programm, "IS_SNAKE"), 1);
 
         // Rysowanie snake
         GLuint* snakePositions = snake.getPositions();
@@ -220,6 +221,7 @@ int main(int argc, char const* argv[]) {
         }
 
         // Rysowanie jedzenia
+        glUniform1i(glGetUniformLocation(shader_programm, "IS_SNAKE"), 0);
         glUniform1f(glGetUniformLocation(shader_programm, "POSITION"), snake.getFoodPosition());
         glUniform3f(glGetUniformLocation(shader_programm, "COLOR"), color_food[0], color_food[1], color_food[2]);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
