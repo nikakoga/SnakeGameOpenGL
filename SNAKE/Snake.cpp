@@ -49,7 +49,16 @@ bool Snake::checkWallHit()
     return false;
 }
 
-bool doesGameJustStart = true;
+bool Snake::checkTailBite()
+{
+    for (GLuint i = 0; i < counter - 1; i++) {
+        if (positions[0] == positions[i + 1])
+            return true;
+    }
+    return false;
+}
+
+
 
 void Snake::snakeLogic() {
 
@@ -57,15 +66,11 @@ void Snake::snakeLogic() {
         return;
     }
 
-    if (!doesGameJustStart)
+    if (checkWallHit())
     {
-        if (checkWallHit())
-        {
             reset();
             return;
-        }
     }
-
 
     GLuint lastSnakeHeadPosition = positions[0];
     GLuint lastSnakeLength = counter;
@@ -98,15 +103,14 @@ void Snake::snakeLogic() {
     if (counter > 1)
         positions[1] = lastSnakeHeadPosition;
 
-    for (GLuint i = 0; i < counter - 1; i++) {
-        if (positions[0] == positions[i + 1])
-            counter = 1;
+    if (checkTailBite())
+    {
+        reset();
     }
 
     if (lastSnakeLength != counter)
         foodPosition = generateRandomPosition();
 
-    doesGameJustStart = false;
 }
 
 void Snake::update() {
@@ -138,5 +142,4 @@ void Snake::reset() {
     positions[0] = GLuint(gridX * gridY / 2);
     direction = PAUSE;
     foodPosition = generateRandomPosition();
-    doesGameJustStart = true;
 }

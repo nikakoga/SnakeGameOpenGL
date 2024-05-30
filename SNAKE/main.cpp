@@ -142,8 +142,6 @@ int main(int argc, char const* argv[]) {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
     glEnableVertexAttribArray(0);
 
-    //snake.reset();
-
     TIME_NOW = TIME_LAST = glfwGetTime();
     TIME_DELTA = TIME_SUM = 0.0;
 

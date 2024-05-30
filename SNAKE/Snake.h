@@ -24,6 +24,7 @@ public:
     void reset();
     GLuint generateRandomPosition();
     bool checkWallHit();
+    bool checkTailBite();
 
 private:
     GLuint counter;
