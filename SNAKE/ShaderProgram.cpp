@@ -8,7 +8,7 @@
 std::string readFile(const char* filePath) {
     std::ifstream file(filePath);
     if (!file.is_open()) {
-        std::cerr << "Failed to open shader file: " << filePath << std::endl;
+        std::cout << "Failed to open shader file: " << filePath << std::endl;
         return "";
     }
     std::stringstream buffer;
@@ -29,7 +29,7 @@ GLuint createShader(const char* filePath, GLenum shaderType) {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-        std::cerr << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
     return shader;
@@ -49,7 +49,7 @@ GLuint createShaderProgram(const char* vertexPath, const char* fragmentPath) {
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-        std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
     glDeleteShader(vertexShader);

@@ -3,7 +3,7 @@
 #include <iostream>
 
 Snake::Snake(GLuint gridX, GLuint gridY) : gridX(gridX), gridY(gridY), foodPosition(generateRandomPosition()) {
-    
+
     srand(time(NULL));
 
     counter = 1;
@@ -68,8 +68,8 @@ void Snake::snakeLogic() {
 
     if (checkWallHit())
     {
-            reset();
-            return;
+        reset();
+        return;
     }
 
     GLuint lastSnakeHeadPosition = positions[0];

@@ -134,6 +134,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Snake.cpp" />
+    <ClCompile Include="stb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dependencies\include\glad\glad.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="dependencies\include\GL\glxew.h" />
     <ClInclude Include="dependencies\include\GL\wglew.h" />
     <ClInclude Include="dependencies\include\KHR\khrplatform.h" />
+    <ClInclude Include="dependencies\include\stb\stb_image.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Snake.h" />
   </ItemGroup>
@@ -153,6 +155,9 @@
   <ItemGroup>
     <None Include="fragmentShader.glsl" />
     <None Include="vertexShader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\..\..\..\..\Desktop\snake_brown_square.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,10 +1,13 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
+#include <iostream>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include "ShaderProgram.h"
 #include "Snake.h"
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
 
 #define GRID_COUNT_X 17
 #define GRID_COUNT_Y 17
@@ -16,6 +19,13 @@ GLfloat color_food[] = { 1.0, 0.5, 0.5 };
 GLfloat color_background[] = { 0.14, 0.16, 0.18 };
 
 GLfloat verticles[] = {
+    0.0, 0.0,
+    0.0, 1.0,
+    1.0, 1.0,
+    1.0, 0.0
+};
+
+GLfloat textureCoords[] = {
     0.0, 0.0,
     0.0, 1.0,
     1.0, 1.0,
@@ -110,7 +120,7 @@ int main(int argc, char const* argv[]) {
     GLFWwindow* window = glfwCreateWindow(500, 500, "SNAKE", NULL, NULL);
 
     if (!window) {
-        fprintf(stderr, "Nie mo¿na utworzyæ okna.\n");
+        fprintf(stderr, "Nie moï¿½na utworzyï¿½ okna.\n");
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
@@ -133,17 +143,42 @@ int main(int argc, char const* argv[]) {
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticles), verticles, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticles) + sizeof(textureCoords), nullptr, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verticles), verticles);
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(verticles), sizeof(textureCoords), textureCoords);
 
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (GLvoid*)(sizeof(verticles)));
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     TIME_NOW = TIME_LAST = glfwGetTime();
     TIME_DELTA = TIME_SUM = 0.0;
+
+    // Wczytywanie tekstury
+    int textureWidth, textureHeight, textureChannels;
+    unsigned char* textureData = stbi_load("snake_brown_square.png", &textureWidth, &textureHeight, &textureChannels, 0);
+    if (!textureData) {
+        std::cout << "Failed to load texture!!!" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(textureData);
+
+    // Ustawianie parametrow tekstury
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     while (!glfwWindowShouldClose(window)) {
         glClearColor(color_background[0], color_background[1], color_background[2], 1.0);
@@ -166,7 +201,10 @@ int main(int argc, char const* argv[]) {
         glBindVertexArray(VAO);
         glUniform2f(glGetUniformLocation(shader_programm, "GRID_COUNT"), (GLfloat)GRID_COUNT_X, (GLfloat)GRID_COUNT_Y);
 
-        // Draw Snake
+        // Przekazywanie samplera tekstury
+        glUniform1i(glGetUniformLocation(shader_programm, "textureSampler"), 0);
+
+        // Rysowanie snake
         GLuint* snakePositions = snake.getPositions();
         for (GLuint i = 0; i < snake.getCounter(); i++) {
             glUniform1f(glGetUniformLocation(shader_programm, "POSITION"), snakePositions[i]);
@@ -181,7 +219,7 @@ int main(int argc, char const* argv[]) {
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
 
-        // Draw Food
+        // Rysowanie jedzenia
         glUniform1f(glGetUniformLocation(shader_programm, "POSITION"), snake.getFoodPosition());
         glUniform3f(glGetUniformLocation(shader_programm, "COLOR"), color_food[0], color_food[1], color_food[2]);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -196,3 +234,4 @@ int main(int argc, char const* argv[]) {
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
+
