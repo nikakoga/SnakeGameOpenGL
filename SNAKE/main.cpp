@@ -37,66 +37,41 @@ GLuint indices[] = {
     2, 3, 0
 };
 
-struct Button {
-    GLboolean down, last, pressed;
-};
-struct Keyboard {
-    struct Button keys[GLFW_KEY_LAST];
-};
-struct Keyboard keyboard = {};
 
 Snake snake(GRID_COUNT_X, GRID_COUNT_Y);
 
 GLdouble TIME_NOW, TIME_LAST, TIME_DELTA, TIME_SUM;
 
-void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (key < 0) {
-        return;
-    }
 
-    switch (action) {
-    case GLFW_PRESS:
-        keyboard.keys[key].down = GL_TRUE;
-        break;
-    case GLFW_RELEASE:
-        keyboard.keys[key].down = GL_FALSE;
-        break;
-    default:
-        break;
-    }
-}
-
-void _button_array_update(struct Button* buttons) {
-    for (int i = 0; i < GLFW_KEY_LAST; i++) {
-        buttons[i].pressed = buttons[i].down && !buttons[i].last;
-        buttons[i].last = buttons[i].down;
-    }
-}
-
-void keyFunctions(GLFWwindow* window) {
-    _button_array_update(keyboard.keys);
+void keyFunctions(GLFWwindow* window, int key, int scancode, int action, int mods) {
+ 
     GLuint _last_snake_direction = snake.getDirection();
 
-    if (keyboard.keys[GLFW_KEY_ESCAPE].down)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    if (keyboard.keys[GLFW_KEY_SPACE].pressed)
-        snake.setDirection(snake.getDirection() | PAUSE);
+    if (action == GLFW_PRESS || GLFW_RELEASE) {
+        if (key == GLFW_KEY_LEFT)
+        {
+            if ((snake.getDirection() != LEFT) && !(snake.getDirection() & RIGHT))
+                snake.setDirection(LEFT);
+        }
 
-    if (keyboard.keys[GLFW_KEY_LEFT].pressed)
-        if ((snake.getDirection() != LEFT) && !(snake.getDirection() & RIGHT))
-            snake.setDirection(LEFT);
+        if (key == GLFW_KEY_RIGHT)
+        {
+            if (!(snake.getDirection() & LEFT) && (snake.getDirection() != RIGHT))
+                snake.setDirection(RIGHT);
+        }
 
-    if (keyboard.keys[GLFW_KEY_RIGHT].pressed)
-        if (!(snake.getDirection() & LEFT) && (snake.getDirection() != RIGHT))
-            snake.setDirection(RIGHT);
+        if (key == GLFW_KEY_UP)
+        {
+            if ((snake.getDirection() != UP) && !(snake.getDirection() & DOWN))
+                snake.setDirection(UP);
+        }
 
-    if (keyboard.keys[GLFW_KEY_UP].pressed)
-        if ((snake.getDirection() != UP) && !(snake.getDirection() & DOWN))
-            snake.setDirection(UP);
-
-    if (keyboard.keys[GLFW_KEY_DOWN].pressed)
-        if (!(snake.getDirection() & UP) && (snake.getDirection() != DOWN))
-            snake.setDirection(DOWN);
+        if (key == GLFW_KEY_DOWN)
+        {
+            if (!(snake.getDirection() & UP) && (snake.getDirection() != DOWN))
+                snake.setDirection(DOWN);
+        }
+    }
 
     if (snake.getDirection() != _last_snake_direction)
     {
@@ -117,7 +92,7 @@ int main(int argc, char const* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    GLFWwindow* window = glfwCreateWindow(500, 500, "SNAKE", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(900, 900, "SNAKE", NULL, NULL);
 
     if (!window) {
         fprintf(stderr, "Nie mo�na utworzy� okna.\n");
@@ -126,7 +101,7 @@ int main(int argc, char const* argv[]) {
     }
 
     glfwMakeContextCurrent(window);
-    glfwSetKeyCallback(window, keyCallback);
+    glfwSetKeyCallback(window, keyFunctions);
     glfwSwapInterval(1);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -185,7 +160,8 @@ int main(int argc, char const* argv[]) {
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        keyFunctions(window);
+        //keyFunctions(window);
+        glfwSetKeyCallback(window, keyFunctions);
 
         TIME_NOW = glfwGetTime();
         TIME_DELTA = TIME_NOW - TIME_LAST;
