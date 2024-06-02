@@ -1,6 +1,16 @@
 #include "Snake.h"
 #include <cstdlib>
 #include <iostream>
+#include <windows.h>
+#pragma comment(lib, "winmm.lib")
+
+
+void playGameOverSound()
+{
+    PlaySound(L"gameOver.wav", NULL, SND_FILENAME);
+    std::wcout << L"Odtwarzanie dzwieku... milego sluchania...!!!";
+}
+
 
 Snake::Snake(GLuint gridX, GLuint gridY) : gridX(gridX), gridY(gridY), foodPosition(generateRandomPosition()) {
 
@@ -138,6 +148,7 @@ GLuint Snake::getFoodPosition() {
 }
 
 void Snake::reset() {
+    playGameOverSound();
     counter = 1;
     positions[0] = GLuint(gridX * gridY / 2);
     direction = PAUSE;
